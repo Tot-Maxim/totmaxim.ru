@@ -1,0 +1,19 @@
+{
+  "name": "cow-and-bull",
+  "version": "1.1.0",
+  "description": "Это игра в слова, в которой нужно угадать слово по подсказкам",
+  "type": "module",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "npm test",
+    "start": "node src/app.js"
+  },
+  "author": "TotMaxim",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2"
+  }
+}

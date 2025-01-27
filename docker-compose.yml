@@ -2,7 +2,7 @@ version: '3'
 services:
   node_app:
     build: 
-      context: ./Node_site
+      context: ./node_site
       dockerfile: Dockerfile
     ports:
       - "3000:3000"

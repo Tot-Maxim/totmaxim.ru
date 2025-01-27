@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+    <%- include('partials/html_header') %>
+
+<body>
+
+    <%- include('partials/header') %>
+    
+    <div class="main-content">
+        
+        <%- include('partials/sidebar') %>
+        
+        <div class="container">
+            <p>
+                «Корова и бык» — это классическая игра на угадывание.
+                Один загадывает секретное число, а второй пытается его угадать.
+                После каждого угадывания первый игрок дает ответ в виде «коров» и «быков»:
+                <br><br>
+                <strong>Бык</strong> означает, что угаданная цифра верна и находится в правильном положении.
+                <strong>Корова</strong> означает, что угаданная цифра верна, но находится в неправильном положении.
+                <br><br>
+                Игра продолжается до тех пор, пока угадавший не определит секретное число или не решит сдаться.
+                Это увлекательный способ развития логического мышления и стратегии!
+                <br><br>
+                #У вас есть 10 попыток, чтобы угадать 4-значное число с уникальными цифрами.
+            </p>
+            <h3>Игра началась!</h3>
+            <h2><br></h2>
+            
+            <% if (typeof bulls !== 'undefined' && typeof cows !== 'undefined') { %>
+                <h3>Коровы: <%= cows %>, Быки: <%= bulls %></h3>
+                <% } %> 
+
+                <form id="guessForm">
+                    <h2><input type="text" name="guess" maxlength="4" pattern="[0-9]{4}" required></h2>
+                    <button type="submit" class="guess-button">Угадать</button>
+                </form>
+                <div class="masked" id="secretNumber" onclick="revealNumber()">
+                    Число: <%= secretNumber %>
+                </div>
+                <p id="previousAttempts">
+                    Предыдущие числа: <%= trying.join(', ') %> <br>
+                    Осталось попыток: <%= attemptsLeft || 0 %>
+                </p>
+        </div>
+    </div>
+  
+    <script>
+        function revealNumber() {
+            const secretNumberElement = document.getElementById('secretNumber');
+            secretNumberElement.classList.remove('masked');
+            secretNumberElement.onclick = null;
+        }
+
+        document.getElementById('guessForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const guess = formData.get('guess');
+
+            try {
+                const response = await fetch('/guess', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ guess })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ошибка сети');
+                }
+
+                const result = await response.json();
+
+                if (result.status === 'win') {
+                    window.location.href = `/win?secretNumber=${result.secretNumber}`;
+                } else if (result.status === 'lose') {
+                    window.location.href = `/lose?secretNumber=${result.secretNumber}`;
+                } else {
+                    document.querySelector('h3').innerHTML = `Коровы: ${result.cows}, Быки: ${result.bulls}`;
+                    const trying = result.trying || [];
+                    document.getElementById('previousAttempts').innerHTML = `Предыдущие числа: ${trying.join(', ')} <br> Осталось попыток: ${result.attemptsLeft}`;
+                }
+
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Ошибка при отправке догадки. Попробуйте еще раз.');
+            }
+        });
+    </script>
+
+    <%- include('partials/script_toggle') %> 
+
+</body>
+</html>

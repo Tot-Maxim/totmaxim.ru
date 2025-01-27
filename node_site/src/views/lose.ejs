@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <%- include('partials/html_header') %>
+<body>
+    <%- include('partials/header') %>
+    <div class="main-content">
+        <%- include('partials/sidebar') %>
+        <div class="container">
+            <h2>Игра окончена! Вы исчерпали все попытки. Загадано число: <%= secretNumber %>.</h2>
+            <button onclick="location.href='/'" class="guess-button">Вернуться на главную страницу</button>
+        </div>
+    </div>
+    <%- include('partials/script_toggle') %>
+</body>
+</html>
