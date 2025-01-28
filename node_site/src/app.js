@@ -93,7 +93,13 @@ app.get('/lose', (req, res) => {
 
 // Маршрут для разработки
 app.get('/dev', (req, res) => {
-    res.render('dev');
+    res.render('dev', {
+        posts: [
+            "Пост 1: Это пример рыбы текста, который заполняет контент поста. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "Пост 2: Второй пост следует той же теме, добавляя больше рыбы текста. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "Пост 3: Третий пост продолжает тему с рифмами. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+        ]
+    });
 });
 
 // Запуск сервера

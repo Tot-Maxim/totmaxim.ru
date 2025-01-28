@@ -7,17 +7,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 
 @SpringBootApplication
 @RestController
 @RequestMapping("/api/game")
 public class CowAndBullApplication {
 
-    private final GameState gameState = new GameState(); // Добавлено создание экземпляра GameState
+    private final GameState gameState = new GameState();
 
 	public static void main(String[] args) {
 		SpringApplication.run(CowAndBullApplication.class, args);
@@ -31,8 +37,14 @@ public class CowAndBullApplication {
     }
 
     @GetMapping("/status")
-    public ResponseEntity<GameState> getGameStatus() {
-        return ResponseEntity.ok(gameState);
+    public ResponseEntity<GameStatus> getGameStatus() {
+        GameStatus gameStatus = new GameStatus(
+            gameState.getSecretNumber(),
+            gameState.getTrying(),
+            gameState.getAttemptsLeft(),
+            gameState.isGameActive()
+        );
+        return ResponseEntity.ok(gameStatus);
     }
 
     @GetMapping("/guess")
@@ -104,13 +116,13 @@ public class CowAndBullApplication {
         private String secretNumber;
         private int attemptsLeft;
         private boolean gameActive;
-        private final List<String> trying = new ArrayList<>(); // Изменено на List
+        private final List<String> trying = new ArrayList<>();
 
         public void startNewGame() {
             this.secretNumber = generateUniqueNumber();
             this.attemptsLeft = 10;
             this.gameActive = true;
-            this.trying.clear(); // Очищаем список догадок
+            this.trying.clear();
         }
 
         private String generateUniqueNumber() {
@@ -132,7 +144,7 @@ public class CowAndBullApplication {
             return secretNumber;
         }
 
-        public List<String> getTrying() { // Теперь возвращает List
+        public List<String> getTrying() {
             return trying;
         }
 

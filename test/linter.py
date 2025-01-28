@@ -17,7 +17,7 @@ def run_eslint(directory_path):
     js_files = []
     for root, dirs, files in os.walk('.'):
         if 'node_modules' in dirs:
-            dirs.remove('node_modules')  # Исключаем директории node_modules
+            dirs.remove('node_modules')
         for file in files:
             if file.endswith('.js'):
                 js_files.append(os.path.join(root, file))

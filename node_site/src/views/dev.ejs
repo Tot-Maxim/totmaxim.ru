@@ -3,12 +3,21 @@
     <%- include('partials/html_header') %>
 <body>
     <%- include('partials/header') %>
-    <div class="main-content">     
+    <div class="main-content">
         <%- include('partials/sidebar') %>
         <div class="container">
-            <h2>Тут немного теории по DevOps</h2>
-
-        </div>
+            <h1>Заголовок блога</h1>
+            <hr>
+            <div class="posts">
+                <% posts.forEach(function(post, index) { %>
+                    <div class="post">
+                        <h2>Пост <%= index + 1 %></h2>
+                        <p><%= post %></p>
+                    </div>
+                    <hr>
+                <% }) %>
+            </div>
+        </div>    
     </div>
     <%- include('partials/script_toggle') %>
 </body>
