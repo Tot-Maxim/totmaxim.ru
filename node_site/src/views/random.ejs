@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>«Случай»</title>
+        <link rel="icon" href="/images/logo.png" type="image/png">
+        <link rel="stylesheet" href="/css/style.sheet.dev.css">
+    </head>
+<body>
+    <%- include('partials/header') %>
+    <div class="main-content">     
+        <%- include('partials/sidebar') %>
+        <div class="container">
+
+            <div class="grid">
+                <% for (let i = 0; i <= 99; i++) { %>
+                    <div class="grid-item" onclick="handleClick(this, '<%= i %>')" style="cursor: pointer;">
+                        <%= i %>
+                    </div>
+                <% } %>
+            </div>
+
+            <button onclick="location.href='/'" class="guess-button">Вернуться на главную страницу</button>
+        </div>
+    </div>
+    
+    <script>
+        function handleClick(element, number) {
+            // Убираем активный класс у всех grid-item
+            const items = document.querySelectorAll('.grid-item');
+            items.forEach(item => item.classList.remove('active'));
+            
+            // Добавляем активный класс к нажатому элементу
+            element.classList.add('active');
+
+            // Перенаправление на нужный URL
+            location.href = '/random/' + number;
+        }
+    </script>
+
+    <%- include('partials/script_toggle') %>
+
+</body>
+</html>

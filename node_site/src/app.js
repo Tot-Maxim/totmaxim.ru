@@ -102,5 +102,9 @@ app.get('/dev', (req, res) => {
     });
 });
 
+app.get('/random', (req, res) => {
+    res.render('random');
+});
+
 // Запуск сервера
 app.listen(3000, () => {});
