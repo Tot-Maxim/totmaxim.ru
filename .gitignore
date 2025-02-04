@@ -33,6 +33,7 @@ build/
 
 # Node modules
 node_modules/
+.venv
 
 # Логи
 npm-debug.log*

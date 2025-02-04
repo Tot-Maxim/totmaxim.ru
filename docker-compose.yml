@@ -1,4 +1,3 @@
-version: '3'
 services:
   node_app:
     build: 
@@ -21,4 +20,3 @@ services:
 networks:
   my-network:
     driver: bridge
-

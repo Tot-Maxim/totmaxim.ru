@@ -1,3 +1,9 @@
+:root {
+    --primary-color: #ffcc00;
+    --secondary-color: #2e2e2e;
+    --background-color: #4e4e4e;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -29,6 +35,13 @@ body {
 
 .header.shrink {
     transform: translateX(300px);
+}
+
+.header-links {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    align-items: center;
 }
 
 .toggle-sidebar {
@@ -198,4 +211,16 @@ input[type="text"] {
     .header-button:hover {
         color: #ffd700;
     }
+
+    .header-links {
+        display: none;
+    }
 }
+
+
+/* Hа больших экранах */
+@media (min-width: 769px) {
+    .sidebar {
+         display: none;
+     }
+ }

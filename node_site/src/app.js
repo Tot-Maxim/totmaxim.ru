@@ -3,8 +3,8 @@ import axios from 'axios';
 import cors from 'cors';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-const app = express();
 
+const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -32,12 +32,10 @@ app.get('/start_game', async (req, res) => {
         await axios.post('http://java-api:3030/api/game/start');
         res.redirect('/game');
     } catch (error) {
-        console.error(error);
+        console.error('Ошибка при запуске игры:', error); // Логируем ошибку
         res.render('error', { message: 'Ошибка при запуске игры.' });
     }
 });
-
-let gameState = {};
 
 // Получить статус игры
 app.get('/game', async (req, res) => {
@@ -49,7 +47,7 @@ app.get('/game', async (req, res) => {
             attemptsLeft: response.data.attemptsLeft
         });
     } catch (error) {
-        console.error(error);
+        console.error('Ошибка при получении статуса игры:', error); // Логируем ошибку
         res.render('error', { message: 'Ошибка при получении статуса игры.' });
     }
 });
@@ -76,17 +74,17 @@ app.post('/guess', async (req, res) => {
         }
 
     } catch (error) {
-        console.error("Ошибка при обработке догадки:", error.response ? error.response.data : error.message);
+        console.error('Ошибка при обработке догадки:', error); // Логируем ошибку
         res.status(500).json({ message: 'Ошибка при обработке догадки.' });
     }
-});
 
+    return res.status(400).json({ message: 'Некорректная догадка.' }); // Возвращаем значение по умолчанию
+});
 
 app.get('/win', (req, res) => {
     const secretNumber = req.query.secretNumber; // Получите номер секрета из запроса
     res.render('win', { secretNumber });
 });
-
 
 app.get('/lose', (req, res) => {
     const secretNumber = req.query.secretNumber;
@@ -94,11 +92,15 @@ app.get('/lose', (req, res) => {
 });
 
 // Маршрут для разработки
-app.get('/dev', (req, res)  => {
-    res.render('dev');
+app.get('/dev', (req, res) => {
+    res.render('dev', {
+        posts: [
+            "Пост 1: Это пример рыбы текста, который заполняет контент поста. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "Пост 2: Второй пост следует той же теме, добавляя больше рыбы текста. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "Пост 3: Третий пост продолжает тему с рифмами. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+        ]
+    });
 });
 
 // Запуск сервера
-app.listen(3000, () => {
-    console.log('Сервер запущен на http://localhost:3000/');
-});
+app.listen(3000, () => {});
