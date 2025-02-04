@@ -1,12 +1,12 @@
 name: Lint Code
 
 on:
-  push:
-    branches:
-      - main  # Измените на вашу основную ветку
-  pull_request:
-    branches:
-      - main
+    push:
+      branches:
+        - dev
+    pull_request:
+      branches:
+        - prod
 
 jobs:
   lint:
@@ -37,7 +37,11 @@ jobs:
 
       - name: Install HTMLHint
         run: npm install -g htmlhint eslint  # Установка HTMLHint и ESLint
+    
+      - name: Check directory contents
+        run: ls -la
 
       - name: Run linter
         run: |
-          python3 linter.py  # Выполнение вашего скрипта линтинга
+            cd test/
+            python3 linter.py

@@ -20,7 +20,19 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      - name: Set version
+        run: |
+            echo "VERSION=1.2.3" >> $GITHUB_ENV
+
+      - name: Set version
+        run: |
+            echo "VERSION=1.2.3" >> $GITHUB_ENV
+
+      - name: Use version
+        run: |
+            echo "Current version is $VERSION"
 
       - name: Set up JDK
         uses: actions/setup-java@v2
