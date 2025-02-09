@@ -50,15 +50,15 @@ jobs:
 
       - name: Build Java with Maven
         run: |
-            cd api_spring
+            cd api_spring/cow_and_bull
             mvn clean package
 
       - name: Run Java tests
         run: |
-            cd api_spring
+            cd api_spring/cow_and_bull
             mvn test
 
       - name: Build Java Docker image
         run: |
-            cd api_spring # обязательно указываем директорию, если у вас разные Dockerfile
+            cd api_spring/cow_and_bull
             docker build . -t ${{ github.repository }}/java-api:latest

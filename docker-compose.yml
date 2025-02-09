@@ -5,15 +5,28 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    env_file:
+      - .env
     networks:
       - my-network
     
   java-api:
     build:
-      context: ./api_spring
+      context: ./api_spring/cow_and_bull
       dockerfile: Dockerfile
     ports:
       - "3030:3030"
+    networks:
+      - my-network
+    
+  java-occasion:
+    build:
+      context: ./api_spring/occasion
+      dockerfile: Dockerfile
+    ports:
+      - "3040:3040"
+    env_file:
+      - .env
     networks:
       - my-network
 
