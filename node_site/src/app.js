@@ -109,7 +109,7 @@ app.post('/guess', async (req, res) => {
 // Эндпоинт для заполнения базы данных
 app.post('/api/populate', async (req, res) => {
     try {
-        const tasks = Array.from({ length: 1000 }, (_, index) => `вы выбрали ${index + 1} задачу`);
+        const tasks = Array.from({ length: 1000 }, (_, index) => `вы выбрали ${index} задачу`);
         const queries = tasks.map(task => {
             return client.query('INSERT INTO occasion (occasion_description) VALUES ($1)', [task]);
         });
