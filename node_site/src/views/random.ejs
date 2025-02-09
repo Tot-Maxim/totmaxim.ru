@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>«Случай»</title>
+    <link rel="stylesheet" href="/css/style.sheet.dev.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+    <div class="main-content"> 
+        <%- include('partials/sidebar') %>    
+        <div class="container">
+            <div class="split-container">
+                <div class="text-container" id="textContainer">
+                    <p>
+                        Нажмите на число, чтобы получить текст из API.
+                    </p>
+                </div>
+                <div class="grid-container">
+                    <div class="grid">
+                        <% for (let i = 0; i <= 99; i++) { %>
+                            <div class="grid-item" onclick="handleClick('<%= i %>')" style="cursor: pointer;">
+                                <%= i %>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="location.href='/'" class="guess-button">Вернуться на главную страницу</button>
+            <button onclick="populateDatabase()" class="guess-button">Заполнить базу данных</button>
+            <button onclick="clearDatabase()" class="guess-button">Очистить базу данных</button>
+        </div>
+    </div>
+
+    <script>
+        function handleClick(number) {
+            const items = document.querySelectorAll('.grid-item');
+            items.forEach(item => item.classList.remove('active'));
+            
+            document.querySelector(`.grid-item:nth-child(${parseInt(number) + 1})`).classList.add('active');
+
+            // Отправляем запрос на сервер Node.js
+            fetch(`/api/random/${number}`)
+                .then(response => response.text())
+                .then(data => {
+                    // Обновляем текст в textContainer
+                    document.getElementById('textContainer').innerHTML = `<p>${data}</p>`;
+                })
+                .catch(error => console.error('Ошибка:', error));
+        }
+
+        function populateDatabase() {
+            fetch('/api/populate', { method: 'POST' })
+                .then(response => response.text())
+                .then(data => alert(data))
+                .catch(error => console.error('Ошибка:', error));
+        }
+
+        function clearDatabase() {
+            fetch('/api/clear', { method: 'POST' })
+                .then(response => response.text())
+                .then(data => alert(data))
+                .catch(error => console.error('Ошибка:', error));
+        }
+    </script>
+    <%- include('partials/script_toggle') %>
+</body>
+</html>

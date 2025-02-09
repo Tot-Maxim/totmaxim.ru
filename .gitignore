@@ -48,6 +48,7 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+api_spring/occasion/src/main/resources/application-secret.properties
 
 # временные файлы
 *~
