@@ -17,3 +17,6 @@ sudo systemctl daemon-reload
 
 # Запуск службы my-node-js-app
 sudo systemctl start my-node-js-app
+
+## sudo systemctl disable postgresql.service
+## sudo systemctl start postgresql.service

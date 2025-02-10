@@ -122,6 +122,8 @@ p {
     
     margin-top: 10px;
     flex-shrink: 0;
+    min-width: 200px;
+    min-height: 50px;
 }
 
 .guess-button:hover {
