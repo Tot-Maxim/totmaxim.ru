@@ -3,21 +3,24 @@ services:
     build:
       context: ./postgresql
       dockerfile: Dockerfile
+    image: tot-postgres:1.0.1
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     volumes:
+      - postgres_data:/var/lib/postgresql/data
       - ./postgresql/init-db/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
     networks:
       - my-network
   
-  node_app:
+  node-web-app:
     build: 
       context: ./node_site
       dockerfile: Dockerfile
+    image: tot-node-app:1.0.1
     ports:
       - "3000:3000"
     env_file:
@@ -29,6 +32,7 @@ services:
     build:
       context: ./api_spring/cow_and_bull
       dockerfile: Dockerfile
+    image: cow-and-bull:1.0.1
     ports:
       - "3030:3030"
     networks:
@@ -38,6 +42,7 @@ services:
     build:
       context: ./api_spring/occasion
       dockerfile: Dockerfile
+    image: occasion:1.0.1
     ports:
       - "3040:3040"
     env_file:
@@ -48,3 +53,6 @@ services:
 networks:
   my-network:
     driver: bridge
+
+volumes:
+  postgres_data:

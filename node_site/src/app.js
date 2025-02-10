@@ -57,7 +57,7 @@ app.get('/', (req, res) => {
 // Начать новую игру
 app.get('/start_game', async (req, res) => {
     try {
-        await axios.post('http://java-api:3030/api/game/start');
+        await axios.post('http://java-api-cow-and-bull:3030/api/game/start');
         res.redirect('/game');
     } catch (error) {
         console.error('Ошибка при запуске игры:', error);
@@ -68,7 +68,7 @@ app.get('/start_game', async (req, res) => {
 // Получить статус игры
 app.get('/game', async (req, res) => {
     try {
-        const response = await axios.get('http://java-api:3030/api/game/status');
+        const response = await axios.get('http://java-api-cow-and-bull:3030/api/game/status');
         res.render('game', {
             secretNumber: response.data.secretNumber,
             trying: response.data.trying,
@@ -84,7 +84,7 @@ app.get('/game', async (req, res) => {
 app.post('/guess', async (req, res) => {
     const guess = req.body.guess;
     try {
-        const response = await axios.get('http://java-api:3030/api/game/guess', { params: { guess } });
+        const response = await axios.get('http://java-api-cow-and-bull:3030/api/game/guess', { params: { guess } });
         const gameResponse = response.data;
 
         if (gameResponse.status === 'win') {

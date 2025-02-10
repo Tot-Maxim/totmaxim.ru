@@ -7,7 +7,7 @@ sudo systemctl stop my-node-js-app
 docker system prune -f
 
 # Остановка и удаление всех контейнеров, сетей, томов и образов проекта tot-maxim
-docker compose --project-name tot-maxim down --volumes --rmi all
+docker compose --project-name tot-maxim down --rmi all
 
 # Сборка контейнеров проекта tot-maxim
 docker compose --project-name tot-maxim build
