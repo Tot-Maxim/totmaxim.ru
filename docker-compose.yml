@@ -1,4 +1,19 @@
 services:
+  postgres:
+    build:
+      context: ./postgresql
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - ./postgresql/init-db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - my-network
+  
   node_app:
     build: 
       context: ./node_site
@@ -10,7 +25,7 @@ services:
     networks:
       - my-network
     
-  java-api:
+  java-api-cow-and-bull:
     build:
       context: ./api_spring/cow_and_bull
       dockerfile: Dockerfile

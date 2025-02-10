@@ -43,9 +43,11 @@ const client = new Client({
     port: process.env.DB_PORT,
 });
 
-client.connect()
-    .then(() => console.log('Подключено к PostgreSQL'))
-    .catch(err => console.error('Ошибка подключения к PostgreSQL', err));
+setTimeout(() => {
+    client.connect()
+        .then(() => console.log('Connected to PostgreSQL'))
+        .catch((err) => console.error('Connection error', err.stack));
+}, 5000); // Задержка 5 секунд
 
 // Корневой маршрут для главной страницы
 app.get('/', (req, res) => {
