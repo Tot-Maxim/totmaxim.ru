@@ -1,0 +1,15 @@
+#sudo nano /etc/systemd/system/my-node-js-app.service
+[Unit]
+Description=My Node.js App using Docker Compose
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+WorkingDirectory=/home/maxim/pet-proj/totmaxim.ru
+ExecStart=/usr/bin/docker compose --project-name tot-maxim up --remove-orphans
+ExecStop=/usr/bin/docker compose --project-name tot-maxim down
+RestartSec=10
+
+[Install]
+#WantedBy=multi-user.target
