@@ -5,11 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>«Случай»</title>
     <link rel="stylesheet" href="/css/style.sheet.dev.css">
+    <!-- <style>
+        .sidebar {
+            width: 300px;
+            background-color: #292929;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            position: fixed;
+            left: 0;
+            top: 55px;
+            height: calc(100vh - 55px);
+            transition: transform 0.3s ease;
+            display: block;
+        }
+
+        .sidebar-item {
+            padding: 10px;
+            color: #ffcc00;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            border-radius: 15px;
+            font-size: 20px;
+        }
+    </style> -->
 </head>
 <body>
     <%- include('partials/header') %>
+
     <div class="main-content"> 
-        <%- include('partials/sidebar') %>    
+        <div class="sidebar" id="sidebar">
+            <a href="/" class="sidebar-item">Вернуться</a>
+            <a href="/random/bdwork" class="sidebar-item">Работа с БД</a>
+            </div>
+        </div>
+
         <div class="container">
             <div class="split-container">
                 <div class="text-container" id="textContainer">
@@ -27,11 +58,8 @@
                     </div>
                 </div>
             </div>
-
-            <button onclick="location.href='/'" class="guess-button">Вернуться на главную страницу</button>
-            <button onclick="populateDatabase()" class="guess-button">Заполнить базу данных</button>
-            <button onclick="clearDatabase()" class="guess-button">Очистить базу данных</button>
         </div>
+
     </div>
 
     <script>
@@ -48,20 +76,6 @@
                     // Обновляем текст в textContainer
                     document.getElementById('textContainer').innerHTML = `<p>${data}</p>`;
                 })
-                .catch(error => console.error('Ошибка:', error));
-        }
-
-        function populateDatabase() {
-            fetch('/api/populate', { method: 'POST' })
-                .then(response => response.text())
-                .then(data => alert(data))
-                .catch(error => console.error('Ошибка:', error));
-        }
-
-        function clearDatabase() {
-            fetch('/api/clear', { method: 'POST' })
-                .then(response => response.text())
-                .then(data => alert(data))
                 .catch(error => console.error('Ошибка:', error));
         }
     </script>

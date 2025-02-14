@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>«Случай»</title>
+        <link rel="stylesheet" href="/css/style.sheet.dev.css">
+    </head>
+<body>
+
+    <%- include('partials/header') %>
+
+    <div class="main-content">
+
+        <div class="sidebar" id="sidebar">
+            <a href="/random" class="sidebar-item">Вернуться</a>
+            <a href="#" onclick="populateDatabase()" class="sidebar-item">Заполнить БД</a>
+            <a id="fetchDataBtn" class="sidebar-item" href="#">Прочитать БД</a>
+            <a href="#" onclick="clearDatabase()" class="sidebar-item">Очистить БД</a>
+            </div>
+        </div>
+
+        <div class="container">
+            <h1>«База данных»</h1>
+            <p id="dataOutput"></p>
+        </div>
+    </div>
+    <script>
+        document.getElementById('fetchDataBtn').addEventListener('click', async () => {
+            const response = await fetch('/api/getdatabase');
+            const data = await response.json();
+            document.getElementById('dataOutput').innerHTML = JSON.stringify(data);
+        });
+
+        function populateDatabase() {
+            fetch('/api/populate', { method: 'POST' })
+                .then(response => response.text())
+                .then(data => alert(data))
+                .catch(error => console.error('Ошибка:', error));
+        }
+
+        function clearDatabase() {
+            fetch('/api/clear', { method: 'POST' })
+                .then(response => response.text())
+                .then(data => alert(data))
+                .catch(error => console.error('Ошибка:', error));
+        }
+    </script>
+    <%- include('partials/script_toggle') %>
+
+</body>
+</html>

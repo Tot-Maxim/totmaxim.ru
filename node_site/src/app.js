@@ -108,34 +108,6 @@ app.post('/guess', async (req, res) => {
     return res.status(400).json({ message: 'Некорректная догадка.' });
 });
 
-// Эндпоинт для заполнения базы данных
-app.post('/api/populate', async (req, res) => {
-    try {
-        const tasks = Array.from({ length: 1000 }, (_, index) => `вы выбрали ${index} задачу`);
-        const queries = tasks.map(task => {
-            return client.query('INSERT INTO occasion (occasion_description) VALUES ($1)', [task]);
-        });
-
-        await Promise.all(queries);
-        res.send('1000 задач добавлено!');
-    } catch (error) {
-        console.error('Ошибка при заполнении базы данных:', error);
-        res.status(500).send('Ошибка при обращении к базе данных');
-    }
-});
-
-// Эндпоинт для очистки таблицы
-app.post('/api/clear', async (req, res) => {
-    try {
-        await client.query('DELETE FROM occasion');
-        await client.query('ALTER SEQUENCE occasion_id_seq RESTART WITH 1');
-        res.send('Все строки удалены и последовательность сброшена!');
-    } catch (error) {
-        console.error('Ошибка при удалении строк:', error);
-        res.status(500).send('Ошибка при обращении к базе данных');
-    }
-});
-
 // Дополнительные маршруты для выигрыша и поражения
 app.get('/win', (req, res) => {
     const secretNumber = req.query.secretNumber;
@@ -160,7 +132,36 @@ app.get('/api/random/:number', async (req, res) => {
     }
 });
 
-// Маршрут для разработки
+// Эндпоинт для заполнения базы данных
+app.post('/api/populate', async (req, res) => {
+    try {
+        const packet_length = 100;
+        const tasks = Array.from({ length: packet_length }, (_, index) => `вы выбрали ${index} задачу`);
+        const queries = tasks.map(task => {
+            return client.query('INSERT INTO occasion (occasion_description) VALUES ($1)', [task]);
+        });
+
+        await Promise.all(queries);
+        res.send(`${packet_length} задач добавлено!`);
+    } catch (error) {
+        console.error('Ошибка при заполнении базы данных:', error);
+        res.status(500).send('Ошибка при обращении к базе данных');
+    }
+});
+
+// Эндпоинт для очистки таблицы
+app.post('/api/clear', async (req, res) => {
+    try {
+        await client.query('DELETE FROM occasion');
+        await client.query('ALTER SEQUENCE occasion_id_seq RESTART WITH 1');
+        res.send('Все строки удалены и последовательность сброшена!');
+    } catch (error) {
+        console.error('Ошибка при удалении строк:', error);
+        res.status(500).send('Ошибка при обращении к базе данных');
+    }
+});
+
+// Маршрут для devops page
 app.get('/dev', (req, res) => {
     res.render('dev', {
         posts: [
@@ -174,6 +175,24 @@ app.get('/dev', (req, res) => {
 // Маршрут для случайной страницы
 app.get('/random', (req, res) => {
     res.render('random');
+});
+
+// Маршрут для случайной страницы
+app.get('/random/bdwork', (req, res) => {
+    res.render('bdwork');
+});
+
+// Эндпоинт для чтения данных из базы данных
+app.get('/api/getdatabase', async (req, res) => {
+    try {
+        const dbResponse = await client.query('SELECT * FROM occasion');
+        const data = dbResponse.rows.map(row => row.occasion_description);
+
+        res.json(data);
+    } catch (error) {
+        console.error('Ошибка при чтении данных из базы данных:', error);
+        res.status(500).send('Ошибка при чтении данных из базы данных');
+    }
 });
 
 // Запуск сервера
