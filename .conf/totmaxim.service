@@ -1,15 +1,16 @@
-#sudo nano /etc/systemd/system/my-node-js-app.service
-[Unit]
-Description=My Node.js App using Docker Compose
-Requires=docker.service
-After=docker.service
+cron job
 
-[Service]
-Restart=always
-WorkingDirectory=/home/maxim/pet-proj/totmaxim.ru
-ExecStart=/usr/bin/docker compose --project-name tot-maxim up --remove-orphans
-ExecStop=/usr/bin/docker compose --project-name tot-maxim down
-RestartSec=10
+#!/bin/bash
 
-[Install]
-#WantedBy=multi-user.target
+# Параметры базы данных
+DB_NAME="имя_вашей_бд"
+DB_USER="имя_пользователя"
+BACKUP_DIR="/путь/к/каталогу/резервных/копий"
+TIMESTAMP=$(date +"%F_%H-%M-%S")
+BACKUP_FILE="$BACKUP_DIR/$DB_NAME-$TIMESTAMP.sql"
+
+# Создание резервной копии
+pg_dump -U $DB_USER $DB_NAME > $BACKUP_FILE
+
+# Если необходимо, добавьте удаление старых бэкапов
+find $BACKUP_DIR -name "*.sql" -type f -mtime +30 -exec rm {} \;
