@@ -120,11 +120,11 @@ app.get('/lose', (req, res) => {
 });
 
 // Маршрут для загрузки случайного числа
-app.get('/api/random/:number', async (req, res) => {
+app.get('/api/occasion/:number', async (req, res) => {
     const number = req.params.number;
 
     try {
-        const response = await axios.get(`http://java-occasion:3040/random/${number}`);
+        const response = await axios.get(`http://java-occasion:3040/occasion/${number}`);
         res.send(response.data);
     } catch (error) {
         console.error('Ошибка при запросе к Java API:', error);
@@ -161,6 +161,18 @@ app.post('/api/clear', async (req, res) => {
     }
 });
 
+// Эндпоинт для чтения данных из базы данных
+app.get('/api/getdatabase', async (req, res) => {
+    try {
+        const dbResponse = await client.query('SELECT * FROM occasion');
+        const data = dbResponse.rows.map(row => row.occasion_description);
+        res.json(data);
+    } catch (error) {
+        console.error('Ошибка при чтении данных из базы данных:', error);
+        res.status(500).send('Ошибка при чтении данных из базы данных');
+    }
+});
+
 // Маршрут для devops page
 app.get('/dev', (req, res) => {
     res.render('dev', {
@@ -172,27 +184,19 @@ app.get('/dev', (req, res) => {
     });
 });
 
-// Маршрут для случайной страницы
-app.get('/random', (req, res) => {
-    res.render('random');
+
+app.get('/occasion', (req, res) => {
+    res.render('occasion');
 });
 
-// Маршрут для случайной страницы
-app.get('/random/bdwork', (req, res) => {
+
+app.get('/occasion/bdwork', (req, res) => {
     res.render('bdwork');
 });
 
-// Эндпоинт для чтения данных из базы данных
-app.get('/api/getdatabase', async (req, res) => {
-    try {
-        const dbResponse = await client.query('SELECT * FROM occasion');
-        const data = dbResponse.rows.map(row => row.occasion_description);
-
-        res.json(data);
-    } catch (error) {
-        console.error('Ошибка при чтении данных из базы данных:', error);
-        res.status(500).send('Ошибка при чтении данных из базы данных');
-    }
+// Маршрут для contruct
+app.get('/contruct', (req, res) => {
+    res.render('contruct');
 });
 
 // Запуск сервера

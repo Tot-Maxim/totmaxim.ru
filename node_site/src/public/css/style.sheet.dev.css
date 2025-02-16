@@ -169,6 +169,10 @@ p {
         margin-top: 15px;
     }
 
+    .blocksidebar {
+        display: none;
+    }
+
     p {
         width: calc(100% - 40px);
         padding: 10px 20px;
@@ -207,4 +211,29 @@ p {
     .sidebar {
          display: none;
      }
- }
+    .blocksidebar {
+        width: 300px;
+        background-color: #292929;
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        position: fixed;
+        left: 0;
+        top: 55px;
+        height: calc(100vh - 55px);
+        display: block;
+    }
+    .blocksidebar-item {
+        padding: 10px 10px;
+        display: flex;
+        color: #ffcc00;
+        text-decoration: none;
+        transition: background-color 0.3s;
+        border-radius: 15px;
+        font-size: 20px;
+    }
+    .blocksidebar-item:hover {
+        background-color: #444444;
+    }
+}
