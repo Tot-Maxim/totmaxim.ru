@@ -13,14 +13,15 @@ fi
 cat <<EOF > $SERVICE_FILE
 [Unit]
 Description=Tot Node.js App from totmaxim github
-Requires=docker.service
-After=docker.service
+#Requires=docker.service
+#After=docker.service
 
 [Service]
+User=totuser
 Restart=always
-WorkingDirectory=/home/maxim/pet-proj/totmaxim.ru
-ExecStart=/usr/bin/docker compose --project-name tot-maxim up --remove-orphans
-ExecStop=/usr/bin/docker compose --project-name tot-maxim down
+WorkingDirectory=/home/totuser/totmaxim.ru
+ExecStart=/snap/bin/docker-compose --project-name tot-maxim up --remove-orphans
+ExecStop=/snap/bin/docker-compose --project-name tot-maxim down
 RestartSec=10
 
 [Install]
@@ -36,4 +37,11 @@ systemctl enable tot-maxim-site.service
 # Запускаем сервис
 systemctl start tot-maxim-site.service
 
-echo "Сервис tot-maxim-site установлен и запущен."
+# Проверка статуса сервиса
+if systemctl is-active --quiet tot-maxim-site.service; then
+    echo "Сервис tot-maxim-site установлен и запущен."
+else
+    echo "Не удалось запустить сервис tot-maxim-site. Проверьте журналы ошибок."
+    systemctl status tot-maxim-site.service
+    journalctl -xe
+fi

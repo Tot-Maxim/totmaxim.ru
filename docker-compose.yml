@@ -10,14 +10,14 @@ services:
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      # - ./postgresql/init-db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgresql/init-db/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
     networks:
       - my-network
-  
+
   node-web-app:
-    build: 
+    build:
       context: ./node_site
       dockerfile: Dockerfile
     image: tot-node-app:1.0.1
@@ -27,7 +27,7 @@ services:
       - .env
     networks:
       - my-network
-    
+
   java-api-cow-and-bull:
     build:
       context: ./api_spring/cow_and_bull
@@ -37,7 +37,7 @@ services:
       - "3030:3030"
     networks:
       - my-network
-    
+
   java-occasion:
     build:
       context: ./api_spring/occasion
