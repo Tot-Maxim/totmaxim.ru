@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Counter;
 
 
 @SpringBootApplication
@@ -24,6 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class CowAndBullApplication {
 
     private final GameState gameState = new GameState();
+    private final Counter gameStartCounter;
+
+    // Внедрение MeterRegistry для метрик
+    public CowAndBullApplication(MeterRegistry registry) {
+        this.gameStartCounter = registry.counter("game_starts");
+    }
 
 	public static void main(String[] args) {
 		SpringApplication.run(CowAndBullApplication.class, args);
@@ -33,6 +41,7 @@ public class CowAndBullApplication {
     public ResponseEntity<String> startNewGame() {
         System.out.println("Starting a new game...");
         gameState.startNewGame();
+        gameStartCounter.increment();
         return ResponseEntity.ok("Игра начата! Загаданное число: " + gameState.getSecretNumber());
     }
 
