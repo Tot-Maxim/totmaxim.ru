@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="/images/logo.png" type="image/png">
+        <title>«Work this DataBase»</title>
+        <link rel="stylesheet" href="/css/style.sheet.dev.css">
+    </head>
+<body>
+
+    <%- include('partials/header') %>
+
+    <div class="main-content">
+
+        <div class="sidebar" id="sidebar">
+            <a href="/occasion" class="sidebar-item">«« Вернуться</a>
+            <a href="#" onclick="populateDatabase()" class="sidebar-item">Заполнить БД</a>
+            <a href="#" onclick="fetchDatabase()" class="sidebar-item">Прочитать БД</a>
+            <a href="#" onclick="clearDatabase()" class="sidebar-item">Очистить БД</a>
+        </div>
+
+        <div class="blocksidebar" id="blocksidebar">
+            <a href="/occasion" class="blocksidebar-item">Вернуться</a>
+            <a href="#" onclick="populateDatabase()" class="blocksidebar-item">Заполнить БД</a>
+            <a href="#" onclick="fetchDatabase()" class="blocksidebar-item">Прочитать БД</a>
+            <a href="#" onclick="clearDatabase()" class="blocksidebar-item">Очистить БД</a>
+            </div>
+        </div>
+
+        <div class="container">
+            <h1>«База данных»</h1>
+            <p id="dataOutput"></p>
+        </div>
+    </div>
+    <script>
+        function fetchDatabase() {
+            fetch('/api/getdatabase')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Сетевая ошибка!'); // В случае ошибки сети
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('dataOutput').innerHTML = JSON.stringify(data);
+                })
+                .catch(error => console.error('Ошибка:', error));
+        }
+
+        function populateDatabase() {
+            fetch('/api/populate', { method: 'POST' })
+                .then(response => response.text())
+                .then(data => alert(data))
+                .catch(error => console.error('Ошибка:', error));
+        }
+
+        function clearDatabase() {
+            fetch('/api/clear', { method: 'POST' })
+                .then(response => response.text())
+                .then(data => alert(data))
+                .catch(error => console.error('Ошибка:', error));
+        }
+    </script>
+    <%- include('partials/script_toggle') %>
+
+</body>
+</html>

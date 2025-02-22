@@ -3,13 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/images/logo.png" type="image/png">
     <title>«Случай»</title>
     <link rel="stylesheet" href="/css/style.sheet.dev.css">
 </head>
 <body>
     <%- include('partials/header') %>
+
     <div class="main-content"> 
-        <%- include('partials/sidebar') %>    
+        <div class="sidebar" id="sidebar">
+            <a href="/" class="sidebar-item">«« Вернуться</a>
+            <a href="/occasion/bdwork" class="sidebar-item">Работа с БД »»</a><br>
+            <a href="/start_game" class="sidebar-item">«Быки и коровы»</a>
+            <a href="/dev" class="sidebar-item">«DevOps теория»</a>
+            <a href="/contruct" class="sidebar-item">«Конструктор»</a>
+        </div>
+
+        <div class="blocksidebar" id="blocksidebar">
+            <a href="/" class="blocksidebar-item">«« Вернуться</a>
+            <a href="/occasion/bdwork" class="blocksidebar-item">Работа с БД »»</a>
+            </div>
+        </div>
+
         <div class="container">
             <div class="split-container">
                 <div class="text-container" id="textContainer">
@@ -27,11 +42,8 @@
                     </div>
                 </div>
             </div>
-
-            <button onclick="location.href='/'" class="guess-button">Вернуться на главную страницу</button>
-            <button onclick="populateDatabase()" class="guess-button">Заполнить базу данных</button>
-            <button onclick="clearDatabase()" class="guess-button">Очистить базу данных</button>
         </div>
+
     </div>
 
     <script>
@@ -41,27 +53,11 @@
             
             document.querySelector(`.grid-item:nth-child(${parseInt(number) + 1})`).classList.add('active');
 
-            // Отправляем запрос на сервер Node.js
-            fetch(`/api/random/${number}`)
+            fetch(`/api/occasion/${number}`)
                 .then(response => response.text())
                 .then(data => {
-                    // Обновляем текст в textContainer
                     document.getElementById('textContainer').innerHTML = `<p>${data}</p>`;
                 })
-                .catch(error => console.error('Ошибка:', error));
-        }
-
-        function populateDatabase() {
-            fetch('/api/populate', { method: 'POST' })
-                .then(response => response.text())
-                .then(data => alert(data))
-                .catch(error => console.error('Ошибка:', error));
-        }
-
-        function clearDatabase() {
-            fetch('/api/clear', { method: 'POST' })
-                .then(response => response.text())
-                .then(data => alert(data))
                 .catch(error => console.error('Ошибка:', error));
         }
     </script>

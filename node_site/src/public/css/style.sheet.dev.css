@@ -119,6 +119,7 @@ p {
 }
 
 .grid-item {
+    user-select: none;
     background-color: #4e4e4e; /* фоновый цвет ячеек */
     color: #ffcc00;
     border: 2px solid #292929; /* рамка ячеек */
@@ -136,6 +137,7 @@ p {
 }
 
 .guess-button {
+    user-select: none;
     margin-top: 20px;
     padding: 10px 20px;
     background-color: #ffcc00;
@@ -165,6 +167,10 @@ p {
         width: 70%;
         transform: translateX(-100%);
         margin-top: 15px;
+    }
+
+    .blocksidebar {
+        display: none;
     }
 
     p {
@@ -205,4 +211,29 @@ p {
     .sidebar {
          display: none;
      }
- }
+    .blocksidebar {
+        width: 300px;
+        background-color: #292929;
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        position: fixed;
+        left: 0;
+        top: 55px;
+        height: calc(100vh - 55px);
+        display: block;
+    }
+    .blocksidebar-item {
+        padding: 10px 10px;
+        display: flex;
+        color: #ffcc00;
+        text-decoration: none;
+        transition: background-color 0.3s;
+        border-radius: 15px;
+        font-size: 20px;
+    }
+    .blocksidebar-item:hover {
+        background-color: #444444;
+    }
+}

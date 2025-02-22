@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/random")
+@RequestMapping("/occasion")
 public class OccasionController {
 
     @Autowired
@@ -20,7 +20,7 @@ public class OccasionController {
 
     @GetMapping("/{number}")
     public String getOccasion(@PathVariable Long number) {
-        Optional<Occasion> occasion = occasionRepository.findById(number);
+        Optional<Occasion> occasion = occasionRepository.findById(number+1);
         return occasion.map(Occasion::getTaskDescription)
                 .orElse("Задача не найдена!");
     }

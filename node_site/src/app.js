@@ -43,9 +43,11 @@ const client = new Client({
     port: process.env.DB_PORT,
 });
 
-client.connect()
-    .then(() => console.log('Подключено к PostgreSQL'))
-    .catch(err => console.error('Ошибка подключения к PostgreSQL', err));
+setTimeout(() => {
+    client.connect()
+        .then(() => console.log('Connected to PostgreSQL'))
+        .catch((err) => console.error('Connection error', err.stack));
+}, 5000); // Задержка 5 секунд
 
 // Корневой маршрут для главной страницы
 app.get('/', (req, res) => {
@@ -55,7 +57,7 @@ app.get('/', (req, res) => {
 // Начать новую игру
 app.get('/start_game', async (req, res) => {
     try {
-        await axios.post('http://java-api:3030/api/game/start');
+        await axios.post('http://java-api-cow-and-bull:3030/api/game/start');
         res.redirect('/game');
     } catch (error) {
         console.error('Ошибка при запуске игры:', error);
@@ -66,7 +68,7 @@ app.get('/start_game', async (req, res) => {
 // Получить статус игры
 app.get('/game', async (req, res) => {
     try {
-        const response = await axios.get('http://java-api:3030/api/game/status');
+        const response = await axios.get('http://java-api-cow-and-bull:3030/api/game/status');
         res.render('game', {
             secretNumber: response.data.secretNumber,
             trying: response.data.trying,
@@ -82,7 +84,7 @@ app.get('/game', async (req, res) => {
 app.post('/guess', async (req, res) => {
     const guess = req.body.guess;
     try {
-        const response = await axios.get('http://java-api:3030/api/game/guess', { params: { guess } });
+        const response = await axios.get('http://java-api-cow-and-bull:3030/api/game/guess', { params: { guess } });
         const gameResponse = response.data;
 
         if (gameResponse.status === 'win') {
@@ -106,16 +108,41 @@ app.post('/guess', async (req, res) => {
     return res.status(400).json({ message: 'Некорректная догадка.' });
 });
 
+// Дополнительные маршруты для выигрыша и поражения
+app.get('/win', (req, res) => {
+    const secretNumber = req.query.secretNumber;
+    res.render('win', { secretNumber });
+});
+
+app.get('/lose', (req, res) => {
+    const secretNumber = req.query.secretNumber;
+    res.render('lose', { secretNumber });
+});
+
+// Маршрут для загрузки случайного числа
+app.get('/api/occasion/:number', async (req, res) => {
+    const number = req.params.number;
+
+    try {
+        const response = await axios.get(`http://java-occasion:3040/occasion/${number}`);
+        res.send(response.data);
+    } catch (error) {
+        console.error('Ошибка при запросе к Java API:', error);
+        res.status(500).send('Пока что, нечего тут смотреть');
+    }
+});
+
 // Эндпоинт для заполнения базы данных
 app.post('/api/populate', async (req, res) => {
     try {
-        const tasks = Array.from({ length: 1000 }, (_, index) => `вы выбрали ${index + 1} задачу`);
+        const packet_length = 100;
+        const tasks = Array.from({ length: packet_length }, (_, index) => `вы выбрали ${index} задачу`);
         const queries = tasks.map(task => {
             return client.query('INSERT INTO occasion (occasion_description) VALUES ($1)', [task]);
         });
 
         await Promise.all(queries);
-        res.send('1000 задач добавлено!');
+        res.send(`${packet_length} задач добавлено!`);
     } catch (error) {
         console.error('Ошибка при заполнении базы данных:', error);
         res.status(500).send('Ошибка при обращении к базе данных');
@@ -134,31 +161,19 @@ app.post('/api/clear', async (req, res) => {
     }
 });
 
-// Дополнительные маршруты для выигрыша и поражения
-app.get('/win', (req, res) => {
-    const secretNumber = req.query.secretNumber;
-    res.render('win', { secretNumber });
-});
-
-app.get('/lose', (req, res) => {
-    const secretNumber = req.query.secretNumber;
-    res.render('lose', { secretNumber });
-});
-
-// Маршрут для загрузки случайного числа
-app.get('/api/random/:number', async (req, res) => {
-    const number = req.params.number;
-
+// Эндпоинт для чтения данных из базы данных
+app.get('/api/getdatabase', async (req, res) => {
     try {
-        const response = await axios.get(`http://java-occasion:3040/random/${number}`);
-        res.send(response.data);
+        const dbResponse = await client.query('SELECT * FROM occasion');
+        const data = dbResponse.rows.map(row => row.occasion_description);
+        res.json(data);
     } catch (error) {
-        console.error('Ошибка при запросе к Java API:', error);
-        res.status(500).send('Пока что, нечего тут смотреть');
+        console.error('Ошибка при чтении данных из базы данных:', error);
+        res.status(500).send('Ошибка при чтении данных из базы данных');
     }
 });
 
-// Маршрут для разработки
+// Маршрут для devops page
 app.get('/dev', (req, res) => {
     res.render('dev', {
         posts: [
@@ -169,9 +184,19 @@ app.get('/dev', (req, res) => {
     });
 });
 
-// Маршрут для случайной страницы
-app.get('/random', (req, res) => {
-    res.render('random');
+
+app.get('/occasion', (req, res) => {
+    res.render('occasion');
+});
+
+
+app.get('/occasion/bdwork', (req, res) => {
+    res.render('bdwork');
+});
+
+// Маршрут для contruct
+app.get('/contruct', (req, res) => {
+    res.render('contruct');
 });
 
 // Запуск сервера

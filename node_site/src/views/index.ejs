@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
-    <%- include('partials/html_header') %>
+<%- include('partials/html_header') %>
+<title>«TotMaxim.ru»</title>
 <body>
 
     <%- include('partials/header') %>
@@ -10,13 +11,61 @@
         <%- include('partials/sidebar') %>
 
         <div class="container">
-            <h1>«Быки и коровы»</h1>
-            <button onclick="location.href='/start_game'" class="guess-button">Начать игру</button>
-            <h1>«Случай»</h1>
-            <button onclick="location.href='/random'" class="guess-button">«Случай»</button>
-        </div>
-    </div>
+            <!-- My blog page -->
+            <h1 class="blog-title">DevOps Engineer</h1>
+            <section class="about-me">
+                <h2>О себе</h2>
+                <p>DevOps Engineer с знаниями в области автоматизации, компьютерных систем и методологий Agile. 
+                Стремлюсь к оптимизации рабочих процессов и повышению продуктивности команды.
+                Обладаю навыками в реализации эффективных решений, направленных на улучшение взаимосвязи между разработкой и операциями.</p>
+            </section>
+            <section class="skills">
+                <h2>Навыки</h2>
+                <ul>
+                    <li>Контейнеризация: Docker, Kubernetes</li>
+                    <li>CI/CD: Jenkins, GitLab CI, GitHub Actions</li>
+                    <li>Облачные технологии: Yandex Cloud</li>
+                    <li>Системы управления конфигурацией: Ansible, Terraform</li>
+                    <li>Мониторинг и логирование: Prometheus, Grafana, ELK stack</li>
+                    <li>Скриптование и программирование: Bash, Python, C/C++, Java, JavaScript</li>
+                </ul>
+            </section>
+            <section class="work-experience">
+                <h2>Опыт работы</h2>
+                <h3>DevOps Engineer</h3>
+                <p>ОА «ТНИИС» (Сентябрь 2023 - настоящее время)</p>
+                <ul>
+                    <li>Разработал и внедрил CI/CD пайплайн для автоматизации развертывания.</li>
+                    <li>Оптимизировал процессы развертывания приложений, что сократило время в 2 раза.</li>
+                    <li>Настроил мониторинг и оповещения для критически важных сервисов.</li>
+                    <li>Внедрил автоматизацию рутинных задач с помощью Ansible и скриптов на Python.</li>
+                </ul>
+                <h3>Автоматизированный тестировщик</h3>
+                <p>ОКБ Сухой (Март 2022 — Февраль 2023)</p>
+                <ul>
+                    <li>Провел тестирование для выявления программных проблем на платформах Fedora и CentOS</li>
+                    <li>Создал тестовые сценарии для верификации встроенного программного обеспечения, обеспечив комплексную проверку функциональности</li>
+                    <li>Разработал модульные и интеграционные тесты на стендах интеграционного и приемочного тестирования</li>
+                </ul>
+            </section>
 
+            <section class="education">
+                <h2>Образование</h2>
+                <p>Магистр Инфокоммуникационных технологий и систем связей, Южный федеральный университет, Таганрог (2018 - 2024)</p>
+            </section>
+
+            <section class="contacts">
+                <h2>Контакты</h2>
+                <p>
+                    Telegram: @totmaxim<br>
+                    Email: <a href="mailto:p.maxim.mail@yandex.ru">p.maxim.mail@yandex.ru</a><br>
+                    GitHub: <a href="https://github.com/Tot-Maxim" target="_blank">My GIT</a>
+                </p>
+            </section>
+        </div>
+        <!--  -->
+    </div>
+    
     <%- include('partials/script_toggle') %>
 
 </body>
