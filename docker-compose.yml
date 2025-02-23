@@ -16,6 +16,17 @@ services:
     networks:
       - my-network
 
+  postgres_exporter:
+    image: bitnami/postgres-exporter:latest  # Измените на это или укажите нужную версию
+    environment:
+      DATA_SOURCE_NAME: "postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable"
+    ports:
+      - "9187:9187"
+    networks:
+      - my-network
+    depends_on:
+      - postgres
+
   node-web-app:
     build:
       context: ./node_site
