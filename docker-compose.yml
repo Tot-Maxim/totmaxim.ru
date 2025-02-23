@@ -17,7 +17,7 @@ services:
       - my-network
 
   postgres_exporter:
-    image: bitnami/postgres-exporter:latest  # Измените на это или укажите нужную версию
+    image: bitnami/postgres-exporter:latest
     environment:
       DATA_SOURCE_NAME: "postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable"
     ports:
@@ -58,6 +58,17 @@ services:
       - "3040:3040"
     env_file:
       - .env
+    networks:
+      - my-network
+
+  prometheus:
+    build:
+      context: ./prometheus
+      dockerfile: Dockerfile
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
     networks:
       - my-network
 
