@@ -174,7 +174,7 @@ app.post('/api/populate', async (req, res) => {
         const packet_length = 100;
         const tasks = Array.from({ length: packet_length }, (_, index) => `вы выбрали ${index} задачу`);
         const queries = tasks.map(task => {
-            return client.query('INSERT INTO occasion (occasion_description) VALUES ($1)', [task]);
+            return pgClient.query('INSERT INTO occasion (occasion_description) VALUES ($1)', [task]);
         });
 
         await Promise.all(queries);
@@ -188,8 +188,8 @@ app.post('/api/populate', async (req, res) => {
 // Эндпоинт для очистки таблицы
 app.post('/api/clear', async (req, res) => {
     try {
-        await client.query('DELETE FROM occasion');
-        await client.query('ALTER SEQUENCE occasion_id_seq RESTART WITH 1');
+        await pgClient.query('DELETE FROM occasion');
+        await pgClient.query('ALTER SEQUENCE occasion_id_seq RESTART WITH 1');
         res.send('Все строки удалены и последовательность сброшена!');
     } catch (error) {
         console.error('Ошибка при удалении строк:', error);
@@ -200,7 +200,7 @@ app.post('/api/clear', async (req, res) => {
 // Эндпоинт для чтения данных из базы данных
 app.get('/api/getdatabase', async (req, res) => {
     try {
-        const dbResponse = await client.query('SELECT * FROM occasion');
+        const dbResponse = await pgClient.query('SELECT * FROM occasion');
         const data = dbResponse.rows.map(row => row.occasion_description);
         res.json(data);
     } catch (error) {
