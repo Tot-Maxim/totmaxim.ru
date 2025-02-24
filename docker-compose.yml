@@ -86,13 +86,15 @@ services:
   grafana:
     build:
       context: ./grafana
-    image: my-grafana:latest
+    image: tot-grafan:latest
     ports:
       - "9030:9030"
     networks:
       - my-network
     depends_on:
       - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
 
 networks:
   my-network:
@@ -100,3 +102,4 @@ networks:
 
 volumes:
   postgres_data:
+  grafana_data:
