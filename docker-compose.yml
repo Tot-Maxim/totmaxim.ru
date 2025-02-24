@@ -38,6 +38,8 @@ services:
       - .env
     networks:
       - my-network
+    depends_on:
+      - postgres
 
   java-api-cow-and-bull:
     build:
@@ -60,6 +62,8 @@ services:
       - .env
     networks:
       - my-network
+    depends_on:
+      - postgres
 
   prometheus:
     build:
@@ -71,6 +75,17 @@ services:
       - "9090:9090"
     networks:
       - my-network
+
+  grafana:
+    build:
+      context: ./grafana
+    image: my-grafana:latest
+    ports:
+      - "9030:9030"
+    networks:
+      - my-network
+    depends_on:
+      - prometheus
 
 networks:
   my-network:
