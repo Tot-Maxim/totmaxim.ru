@@ -1,0 +1,20 @@
+---
+- name: Установка и запуск Nginx
+  hosts: local
+  become: yes
+  tasks:
+    - name: Установка Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Создание HTML файла
+      copy:
+        content: "You are welcome!"
+        dest: /var/www/html/index.html
+    - name: Запуск Nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
