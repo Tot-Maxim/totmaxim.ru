@@ -1,5 +1,5 @@
 ---
-- name: Установка и запуск Nginx
+- name: Установка и настройка Nginx с Certbot
   hosts: local
   become: yes
   tasks:
@@ -9,12 +9,98 @@
         state: present
         update_cache: yes
 
+    - name: Установка Certbot и плагина для Nginx
+      apt:
+        name:
+          - certbot
+          - python3-certbot-nginx
+        state: present
+
     - name: Создание HTML файла
       copy:
         content: "You are welcome!"
         dest: /var/www/html/index.html
-    - name: Запуск Nginx
+
+    - name: Настройка конфигурации Nginx
+      copy:
+        content: |
+          server {
+              if ($host = tot-maxim.ru) {
+                  return 301 https://$host$request_uri;
+              } # managed by Certbot
+
+              listen 80;
+              server_name tot-maxim.ru;
+              return 404;
+          }
+
+          server {
+              listen 443 ssl http2;
+              server_name tot-maxim.ru;
+
+              ssl_certificate /etc/letsencrypt/live/tot-maxim.ru/fullchain.pem; # managed by Certbot
+              ssl_certificate_key /etc/letsencrypt/live/tot-maxim.ru/privkey.pem; # managed by Certbot
+              include /etc/letsencrypt/options-ssl-nginx.conf;
+              ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+              #####################################
+              # GZIP
+              #####################################
+              gzip on;
+              gzip_vary on;
+              gzip_disable "MSIE [4-6]\.";
+              gzip_types text/plain
+                      text/css
+                      application/json
+                      application/x-javascript
+                      text/xml
+                      application/xml
+                      application/xml+rss
+                      text/javascript
+                      application/javascript;
+
+              #####################################
+              # Locations
+              #####################################
+              location / {
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto $scheme;
+                  proxy_pass http://localhost:3000;
+                  limit_conn conn_limit 10;
+              }
+          }
+        dest: /etc/nginx/sites-available/tot-maxim.ru
+
+    - name: Создание символической ссылки для включения сайта
+      file:
+        src: /etc/nginx/sites-available/tot-maxim.ru
+        dest: /etc/nginx/sites-enabled/tot-maxim.ru
+        state: link
+
+    - name: Проверка синтаксиса конфигурации Nginx
+      command: nginx -t
+      register: nginx_test
+      failed_when: nginx_test.rc != 0
+      changed_when: false
+
+    - name: Перезапуск Nginx
       service:
         name: nginx
-        state: started
+        state: restarted
+
+    - name: Получение SSL-сертификата с помощью Certbot
+      command: certbot --nginx -d tot-maxim.ru --agree-tos --non-interactive --email your-email@example.com
+      register: certbot_result
+      failed_when: certbot_result.rc != 0
+      changed_when: true
+      environment:
+        PATH: /usr/bin:/usr/sbin:/bin:/sbin
+
+    - name: Перезапуск Nginx после получения сертификата
+      service:
+        name: nginx
+        state: restarted
         enabled: yes
+        
