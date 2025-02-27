@@ -1,0 +1,26 @@
+# prometheus/prometheus.yml
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres_exporter:9187']
+
+  - job_name: 'java-api-cow-and-bull'
+    static_configs:
+      - targets: ['java-api-cow-and-bull:3030']
+    metrics_path: "/actuator/prometheus"
+
+  - job_name: 'java-occasion'
+    static_configs:
+      - targets: ['java-occasion:3040']
+    metrics_path: "/actuator/prometheus"
+
+  - job_name: 'node-web-app'
+    static_configs:
+      - targets: ['node-web-app:3000']
+  
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node_exporter:9100']

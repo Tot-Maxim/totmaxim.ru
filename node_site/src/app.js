@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import pkg from 'pg';
 const { Client } = pkg;
 import dotenv from 'dotenv';
+import client from 'prom-client';
 
 dotenv.config();
 
@@ -16,8 +17,26 @@ const __dirname = dirname(__filename);
 // Настройки порта
 const port = 3000;
 
+// Создаем реестр для метрик
+const registry = new client.Registry();
+
+// Создаем метрики
+const httpRequestDurationMicroseconds = new client.Histogram({
+    name: 'http_request_duration_seconds',
+    help: 'Duration of HTTP requests in seconds',
+    labelNames: ['method', 'route', 'status'],
+    registers: [registry],
+});
+
+const httpRequestsTotal = new client.Counter({
+    name: 'http_requests_total',
+    help: 'Total number of HTTP requests',
+    labelNames: ['method', 'route', 'status'],
+    registers: [registry],
+});
+
 // Конфигурация CORS
-app.use(cors({ 
+app.use(cors({
     origin: 'http://localhost:3000',
     methods: ['GET', 'POST'],
     credentials: true
@@ -35,7 +54,7 @@ app.set('view engine', 'ejs');
 app.use(express.static(join(__dirname, 'public')));
 
 // Подключение к базе данных PostgreSQL
-const client = new Client({
+const pgClient = new Client({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
     database: process.env.DB_NAME,
@@ -44,7 +63,7 @@ const client = new Client({
 });
 
 setTimeout(() => {
-    client.connect()
+    pgClient.connect()
         .then(() => console.log('Connected to PostgreSQL'))
         .catch((err) => console.error('Connection error', err.stack));
 }, 5000); // Задержка 5 секунд
@@ -53,6 +72,23 @@ setTimeout(() => {
 app.get('/', (req, res) => {
     res.render('index');
 });
+
+// Middleware для метрик
+app.use((req, res, next) => {
+    const end = httpRequestDurationMicroseconds.startTimer();
+    res.on('finish', () => {
+        end({ method: req.method, route: req.originalUrl, status: res.statusCode });
+        httpRequestsTotal.inc({ method: req.method, route: req.originalUrl, status: res.statusCode });
+    });
+    next();
+});
+
+// Добавьте маршрут для метрик
+app.get('/metrics', async (req, res) => {
+    res.set('Content-Type', registry.contentType);
+    res.end(await registry.metrics());
+});
+
 
 // Начать новую игру
 app.get('/start_game', async (req, res) => {
@@ -138,7 +174,7 @@ app.post('/api/populate', async (req, res) => {
         const packet_length = 100;
         const tasks = Array.from({ length: packet_length }, (_, index) => `вы выбрали ${index} задачу`);
         const queries = tasks.map(task => {
-            return client.query('INSERT INTO occasion (occasion_description) VALUES ($1)', [task]);
+            return pgClient.query('INSERT INTO occasion (occasion_description) VALUES ($1)', [task]);
         });
 
         await Promise.all(queries);
@@ -152,8 +188,8 @@ app.post('/api/populate', async (req, res) => {
 // Эндпоинт для очистки таблицы
 app.post('/api/clear', async (req, res) => {
     try {
-        await client.query('DELETE FROM occasion');
-        await client.query('ALTER SEQUENCE occasion_id_seq RESTART WITH 1');
+        await pgClient.query('DELETE FROM occasion');
+        await pgClient.query('ALTER SEQUENCE occasion_id_seq RESTART WITH 1');
         res.send('Все строки удалены и последовательность сброшена!');
     } catch (error) {
         console.error('Ошибка при удалении строк:', error);
@@ -164,7 +200,7 @@ app.post('/api/clear', async (req, res) => {
 // Эндпоинт для чтения данных из базы данных
 app.get('/api/getdatabase', async (req, res) => {
     try {
-        const dbResponse = await client.query('SELECT * FROM occasion');
+        const dbResponse = await pgClient.query('SELECT * FROM occasion');
         const data = dbResponse.rows.map(row => row.occasion_description);
         res.json(data);
     } catch (error) {

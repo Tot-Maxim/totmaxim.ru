@@ -1,0 +1,86 @@
+---
+- name: Установка Nginx и получение SSL сертификата Let's Encrypt
+  hosts: local
+  become: yes
+
+  tasks:
+    - name: Установите Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Установить Certbot и плагин для Nginx
+      apt:
+        name:
+          - certbot
+          - python3-certbot-nginx
+        state: present
+
+    - name: Настройка статической страницы
+      copy:
+        dest: /var/www/html/index.html
+        content: |
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Welcome</title>
+          </head>
+          <body>
+              <h1>You are welcome!</h1>
+          </body>
+          </html>
+
+    - name: Настройка конфигурации Nginx
+      copy:
+        dest: /etc/nginx/sites-available/tot-maxim.ru
+        content: |
+          server {
+              listen 80;
+              server_name tot-maxim.ru;
+
+              return 301 https://$host$request_uri;  # Перенаправление на HTTPS
+          }
+
+          server {
+              listen 443 ssl;
+              server_name tot-maxim.ru;
+
+              ssl_certificate /etc/letsencrypt/live/tot-maxim.ru/fullchain.pem;  # Путь к сертификату
+              ssl_certificate_key /etc/letsencrypt/live/tot-maxim.ru/privkey.pem; # Путь к ключу
+
+              location / {
+                  root /var/www/html; # Указываем корневую папку для статических файлов
+                  index index.html;    # Указываем индексный файл
+              }
+          }
+      notify: Restart Nginx
+    - name: Создание символической ссылки для включения сайта
+      command: ln -s /etc/nginx/sites-available/tot-maxim.ru /etc/nginx/sites-enabled/tot-maxim.ru
+      args:
+        creates: /etc/nginx/sites-enabled/tot-maxim.ru
+      notify: Restart Nginx
+
+    - name: Проверка синтаксиса конфигурации Nginx
+      command: nginx -t
+
+    - name: Перезапустите Nginx
+      service:
+        name: nginx
+        state: restarted
+
+    - name: Получение SSL-сертификата с помощью Certbot
+      command: certbot --nginx -d tot-maxim.ru --non-interactive --agree-tos --email p.maxim.mail@yandex.com
+
+    - name: Перезапуск Nginx после получения сертификата
+      service:
+        name: nginx
+        state: restarted
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted

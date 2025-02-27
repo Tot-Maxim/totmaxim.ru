@@ -16,6 +16,17 @@ services:
     networks:
       - my-network
 
+  postgres_exporter:
+    image: bitnami/postgres-exporter:latest
+    environment:
+      DATA_SOURCE_NAME: "postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable"
+    ports:
+      - "9187:9187"
+    networks:
+      - my-network
+    depends_on:
+      - postgres
+
   node-web-app:
     build:
       context: ./node_site
@@ -27,6 +38,8 @@ services:
       - .env
     networks:
       - my-network
+    depends_on:
+      - postgres
 
   java-api-cow-and-bull:
     build:
@@ -49,6 +62,39 @@ services:
       - .env
     networks:
       - my-network
+    depends_on:
+      - postgres
+  
+  node_exporter:
+    image: prom/node-exporter:latest
+    ports:
+      - "9100:9100"
+    networks:
+      - my-network
+
+  prometheus:
+    build:
+      context: ./prometheus
+      dockerfile: Dockerfile
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - my-network
+
+  grafana:
+    build:
+      context: ./grafana
+    image: tot-grafan:latest
+    ports:
+      - "9030:9030"
+    networks:
+      - my-network
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
 
 networks:
   my-network:
@@ -56,3 +102,4 @@ networks:
 
 volumes:
   postgres_data:
+  grafana_data:
